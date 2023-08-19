@@ -1,0 +1,14 @@
+C:\Users\marco\OneDrive\Documentos\UNE\Cuarto Semestre\Compiladores\minsk\mc\bin\Debug\net7.0\mc.exe
+C:\Users\marco\OneDrive\Documentos\UNE\Cuarto Semestre\Compiladores\minsk\mc\bin\Debug\net7.0\mc.deps.json
+C:\Users\marco\OneDrive\Documentos\UNE\Cuarto Semestre\Compiladores\minsk\mc\bin\Debug\net7.0\mc.runtimeconfig.json
+C:\Users\marco\OneDrive\Documentos\UNE\Cuarto Semestre\Compiladores\minsk\mc\bin\Debug\net7.0\mc.dll
+C:\Users\marco\OneDrive\Documentos\UNE\Cuarto Semestre\Compiladores\minsk\mc\bin\Debug\net7.0\mc.pdb
+C:\Users\marco\OneDrive\Documentos\UNE\Cuarto Semestre\Compiladores\minsk\mc\obj\Debug\net7.0\mc.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\marco\OneDrive\Documentos\UNE\Cuarto Semestre\Compiladores\minsk\mc\obj\Debug\net7.0\mc.AssemblyInfoInputs.cache
+C:\Users\marco\OneDrive\Documentos\UNE\Cuarto Semestre\Compiladores\minsk\mc\obj\Debug\net7.0\mc.AssemblyInfo.cs
+C:\Users\marco\OneDrive\Documentos\UNE\Cuarto Semestre\Compiladores\minsk\mc\obj\Debug\net7.0\mc.csproj.CoreCompileInputs.cache
+C:\Users\marco\OneDrive\Documentos\UNE\Cuarto Semestre\Compiladores\minsk\mc\obj\Debug\net7.0\mc.dll
+C:\Users\marco\OneDrive\Documentos\UNE\Cuarto Semestre\Compiladores\minsk\mc\obj\Debug\net7.0\refint\mc.dll
+C:\Users\marco\OneDrive\Documentos\UNE\Cuarto Semestre\Compiladores\minsk\mc\obj\Debug\net7.0\mc.pdb
+C:\Users\marco\OneDrive\Documentos\UNE\Cuarto Semestre\Compiladores\minsk\mc\obj\Debug\net7.0\mc.genruntimeconfig.cache
+C:\Users\marco\OneDrive\Documentos\UNE\Cuarto Semestre\Compiladores\minsk\mc\obj\Debug\net7.0\ref\mc.dll

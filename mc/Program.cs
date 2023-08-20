@@ -1,21 +1,37 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using Microsoft.VisualBasic;
-
+//min 27:38
 while (true)
 {
         Console.Write(">  ");
     var line = Console.ReadLine();
         if (string.IsNullOrWhiteSpace(line))
             return;
-        if(line == "1 + 2 * 3" )
-            Console.WriteLine("7");
-        else 
-            Console.WriteLine("Invalid expression!");
+        var lexer = new Lexer(line);
+        while(true)
+        {
+            var token = lexer.NextToken();
+            if(token.Kind == SyntaxKind.EndOfFileToken)
+                break;
+            Console.Write($"{token.Kind}: '{token.Text}'");
+            if (token.Value != null)
+                Console.Write($"{token.Value}");
+            Console.WriteLine();         
+            
+        }
 }
 
 enum SyntaxKind
 {
-    NumberToken, 
+    NumberToken,
+    PlusToken,
+    MinusToken,
+    StarToken,
+    SlashToken,
+    OpToken,
+    ClToken,
+    BadToken,
+    EndOfFileToken
 }
 class SyntaxToken
 {
@@ -65,7 +81,10 @@ class Lexer {
         //  <numbers>
         // + - * / ( )
         // <whitespace>
-        
+        if(_position >= _text.Length)
+        {
+            return new SyntaxToken(SyntaxKind.EndOfFileToken, _position, "\0", null);
+        }
         //min 23:11
         if(char.IsDigit(Current))
         {
@@ -85,13 +104,21 @@ class Lexer {
                 Next();
             var length = _position - start;
             var text = _text.Substring(start, length);
-            int.TryParse(text, out var value);
-            return new SyntaxToken(SyntaxKind.NumberToken, start, text, value);
+            return new SyntaxToken(SyntaxKind.NumberToken, start, text, null);
         }
         //Validar los operadores
-        if(Current == '+')
-        {
-
-        }
+        if ( Current == '+')
+            return new SyntaxToken(SyntaxKind.PlusToken, _position++, "+", null);
+        else if (Current == '-')
+            return new SyntaxToken(SyntaxKind.MinusToken, _position++, "-", null);
+        else if (Current == '*')
+            return new SyntaxToken(SyntaxKind.StarToken, _position++, "*", null);
+        else if (Current == '/')
+            return new SyntaxToken(SyntaxKind.SlashToken, _position++, "/", null);
+       else if (Current == '(')
+            return new SyntaxToken(SyntaxKind.OpToken, _position++, "(", null);
+         else if (Current == ')')
+            return new SyntaxToken(SyntaxKind.ClToken, _position++, ")", null);
+        return new SyntaxToken(SyntaxKind.BadToken, _position++, _text.Substring(_position - 1, 1), null );
     }
 }

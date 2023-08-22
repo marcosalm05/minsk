@@ -1,8 +1,16 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using System.Linq.Expressions;
 using Microsoft.VisualBasic;
 //min 27:38
 while (true)
 {
+    //min 38:04 
+    // 1 + 3 * 5
+    //      +
+    //     / \
+    //    1   *
+    //       / \       
+    //      3   5
         Console.Write(">  ");
     var line = Console.ReadLine();
         if (string.IsNullOrWhiteSpace(line))
@@ -31,7 +39,10 @@ enum SyntaxKind
     OpToken,
     ClToken,
     BadToken,
-    EndOfFileToken
+    EndOfFileToken,
+    WhiteSpaceToken,
+    NumberExpression,
+    BinaryExpression
 }
 class SyntaxToken
 {
@@ -47,7 +58,8 @@ class SyntaxToken
     public string Text {get;}
     public object Value {get;}
 }
-class Lexer {
+class Lexer 
+{
     /*Esta declaración crea un campo privado llamado _text que almacena una cadena de texto. 
     La palabra clave readonly indica
     que este campo solo puede asignarse en su declaración o en el constructor de la clase, 
@@ -121,4 +133,64 @@ class Lexer {
             return new SyntaxToken(SyntaxKind.ClToken, _position++, ")", null);
         return new SyntaxToken(SyntaxKind.BadToken, _position++, _text.Substring(_position - 1, 1), null );
     }
+}
+abstract class SyntaxNode 
+{
+    public abstract SyntaxKind Kind {get ;}
+}
+abstract class ExpressionSyntax : SyntaxNode
+{
+   
+}
+sealed class NumberExpressionSyntax : ExpressionSyntax
+{
+    public NumberExpressionSyntax(SyntaxToken numberToken)
+    {
+        NumberToken = numberToken;
+    }
+    public override SyntaxKind Kind => SyntaxKind.NumberExpression;
+    public SyntaxToken NumberToken {get; }
+}
+sealed class BinaryExpressionSyntax : ExpressionSyntax
+{
+    public BinaryExpressionSyntax(ExpressionSyntax left, SyntaxNode operatorToken, ExpressionSyntax right)
+    {
+        //40:45
+        Left = left;
+        OperatorToken = operatorToken;
+        Right = right;
+    }
+    public override SyntaxKind Kind => SyntaxKind.BinaryExpression;
+    public ExpressionSyntax Left {get; }
+    public SyntaxNode OperatorToken {get; }
+    public ExpressionSyntax Right {get; }
+}
+class Parser
+{
+    private readonly SyntaxToken[] _tokens;
+    private int _position;
+    public Parser(string text)
+    {
+        var tokens = new List<SyntaxToken>();
+
+        var lexer = new Lexer(text);
+        SyntaxToken token;
+        do
+        {
+            token = lexer.NextToken();
+            if(token.Kind != SyntaxKind.WhiteSpaceToken && token.Kind != SyntaxKind.BadToken)
+            {
+                tokens.Add(token);
+            }
+        } while (token.Kind != SyntaxKind.EndOfFileToken);
+        _tokens = tokens.ToArray();
+    }
+    private SyntaxToken Peek(int offset)
+    {
+        var index = _position + offset;
+        if (index >= _tokens.Length)
+            return _tokens[_tokens.Length - 1];
+        return _tokens[index];
+    }
+    private SyntaxToken Current => Peek(0);
 }

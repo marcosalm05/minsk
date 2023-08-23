@@ -15,6 +15,16 @@ while (true)
     var line = Console.ReadLine();
         if (string.IsNullOrWhiteSpace(line))
             return;
+        var parser = new Parser(line);
+        var expression = parser.Parse();
+
+        var color = Console.ForegroundColor;
+        Console.ForegroundColor = ConsoleColor.DarkGray;
+
+        PrettyPrint(expression);
+
+        Console.ForegroundColor = color;
+
         var lexer = new Lexer(line);
         while(true)
         {
@@ -29,6 +39,19 @@ while (true)
         }
 }
 
+// Impresión del árbol de sintaxis abstracta
+static void PrettyPrint(SyntaxNode node, string indent ="")
+{
+    Console.Write(node.Kind);
+    if (node is SyntaxToken t && t.Value != null)
+    {
+        Console.Write(" ");
+        Console.Write(t.Value);
+    }
+    indent += "    ";
+    foreach (var child in node.GetChildren())
+        PrettyPrint(child, indent);
+}
 enum SyntaxKind
 {
     NumberToken,
@@ -44,7 +67,7 @@ enum SyntaxKind
     NumberExpression,
     BinaryExpression
 }
-class SyntaxToken
+class SyntaxToken : SyntaxNode
 {
     public SyntaxToken(SyntaxKind kind, int position, string text, object value)
     {
@@ -53,10 +76,16 @@ class SyntaxToken
     Text = text;
     Value = value;
     }
-    public SyntaxKind Kind {get;}
+    public override SyntaxKind Kind {get;}
     public int Position {get;}
     public string Text {get;}
     public object Value {get;}
+
+
+    public override IEnumerable<SyntaxNode> GetChildren()
+    {
+    return Enumerable.Empty<SyntaxNode>();
+    }
 }
 class Lexer 
 {
@@ -137,6 +166,8 @@ class Lexer
 abstract class SyntaxNode 
 {
     public abstract SyntaxKind Kind {get ;}
+    //Crear una nocion de "nodo hijo" min 45:48
+    public abstract IEnumerable<SyntaxNode> GetChildren();
 }
 abstract class ExpressionSyntax : SyntaxNode
 {
@@ -150,10 +181,15 @@ sealed class NumberExpressionSyntax : ExpressionSyntax
     }
     public override SyntaxKind Kind => SyntaxKind.NumberExpression;
     public SyntaxToken NumberToken {get; }
+
+    public override IEnumerable<SyntaxNode> GetChildren()
+    {
+        yield return NumberToken;
+    }
 }
 sealed class BinaryExpressionSyntax : ExpressionSyntax
 {
-    public BinaryExpressionSyntax(ExpressionSyntax left, SyntaxNode operatorToken, ExpressionSyntax right)
+    public BinaryExpressionSyntax(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
     {
         //40:45
         Left = left;
@@ -162,8 +198,14 @@ sealed class BinaryExpressionSyntax : ExpressionSyntax
     }
     public override SyntaxKind Kind => SyntaxKind.BinaryExpression;
     public ExpressionSyntax Left {get; }
-    public SyntaxNode OperatorToken {get; }
+    public SyntaxToken OperatorToken {get; }
     public ExpressionSyntax Right {get; }
+    public override IEnumerable<SyntaxNode> GetChildren()
+    {
+        yield return Left;
+        yield return OperatorToken;
+        yield return Right;
+    }
 }
 class Parser
 {
@@ -193,4 +235,33 @@ class Parser
         return _tokens[index];
     }
     private SyntaxToken Current => Peek(0);
+    //A partir de esta expresion buscaremos trabajar con la estructura del arbol
+    private SyntaxToken NextToken()
+    {
+        var current = Current;
+         _position++;
+        return current;
+    }
+    private SyntaxToken Match(SyntaxKind kind)
+    {
+        if(Current.Kind == kind)
+            return NextToken();
+        return new SyntaxToken(kind, Current.Position, null, null);
+    }
+    public ExpressionSyntax Parse()
+    {
+       var left = ParsePrimaryExpression();
+       while (Current.Kind == SyntaxKind.PlusToken || Current.Kind == SyntaxKind.MinusToken)
+       {
+            var operatorToken = NextToken();
+            var right = ParsePrimaryExpression();
+            left = new BinaryExpressionSyntax(left, operatorToken, right);
+       } 
+       return left;
+    }
+    private ExpressionSyntax ParsePrimaryExpression()
+    {
+        var numberToken = Match(SyntaxKind.NumberToken);
+    return new NumberExpressionSyntax(numberToken);
+    }
 }
